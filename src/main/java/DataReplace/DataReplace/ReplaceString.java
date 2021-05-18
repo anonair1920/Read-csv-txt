@@ -42,10 +42,12 @@ public class ReplaceString {
 		String oldContent = "";
 		String line = br.readLine();
 		while(line != null) {
-			oldContent = oldContent + line + System.lineSeparator();
+			oldContent = oldContent + line;
 			line = br.readLine();
 		}
-		String newContent = oldContent.replaceAll("$1_$" , "new word");
+		System.out.println(">>"+oldContent);
+		String newContent = oldContent.replaceAll("5 7" , "new word");
+		System.out.println("<<"+newContent);
 		FileWriter writer = new FileWriter("E:\\test\\data\\b.txt");
 		writer.write(newContent);
 		br.close();
