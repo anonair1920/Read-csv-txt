@@ -4,7 +4,6 @@ import java.io.*;
 import java.util.List;
 
 import org.apache.poi.xssf.usermodel.*;
-import org.apache.poi.ss.usermodel.Cell;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
@@ -12,19 +11,32 @@ import com.opencsv.exceptions.CsvException;
 public class ReplaceString {	
 	
 	public static void main(String[] args) throws IOException, CsvException {
-		String[] headers = readCSV("E:\\test\\newInput.csv");
-		readTXT("E:\\test\\data\\e.txt");
-		writeXLSX("E:\\test\\output\\out.xlsx", headers);
+		try {
+			ReplaceString replaceString = new ReplaceString();
+			replaceString.execute();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public static String[] readCSV(String file) throws IOException, CsvException {
+	public void execute() throws Exception {
+		try {
+			String[] headers = readCSV("E:\\test\\newInput.csv");
+			this.readTXT("E:\\test\\data\\e.txt");
+			this.writeXLSX( "E:\\test\\out.xlsx" , headers);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public String[] readCSV(String file) throws IOException, CsvException {
 		CSVReader reader = new CSVReader( new FileReader(file));
 		List<String[]> allRows;
 		allRows = reader.readAll();
 		return allRows.get(0);
 		}
 	
-	public static void readTXT(String file) throws IOException {
+	public void readTXT(String file) throws IOException {
 		FileReader fr = new FileReader("E:\\test\\data\\e.txt");
 		BufferedReader br = new BufferedReader(fr);
 		String oldContent = "";
@@ -32,29 +44,34 @@ public class ReplaceString {
 		while(line != null) {
 			oldContent = oldContent + line + System.lineSeparator();
 			line = br.readLine();
-			System.out.println("->" +line);
 		}
-		System.out.println(oldContent);
-		String newContent = oldContent.replaceAll("${$1_$}" , "new word");
-		System.out.println(newContent);
+		String newContent = oldContent.replaceAll("$1_$" , "new word");
 		FileWriter writer = new FileWriter("E:\\test\\data\\b.txt");
 		writer.write(newContent);
 		br.close();
 		writer.close();
 	}
 	
-	public static void writeXLSX(String file, String[] headers) throws IOException {
-		XSSFWorkbook wb = new XSSFWorkbook( new FileInputStream(file));
-		XSSFSheet sheet = wb.getSheet("Sheet1");
-		XSSFRow row = null;		
-		int i = 0;
-		while((row = sheet.getRow(i)) != null){
-			Cell cell = row.createCell(0);
-			cell.setCellValue(headers[i]);
-			i++;
-}
-		FileOutputStream fileout = new FileOutputStream("E:\\test\\output\\new.xlsx");
-		wb.write(fileout);
+	public void writeXLSX(String file, String[] headers) {
+		try {
+			String excelFileName = "E:\\test\\output.xlsx";
+			String sheetName = "Sheet1" ;
+			XSSFWorkbook wb = new XSSFWorkbook();
+			XSSFSheet sheet = wb.createSheet(sheetName);
+			for ( int r = 0; r < headers.length; r++) {
+				XSSFRow row = sheet.createRow(r);
+				XSSFCell cell = row.createCell(0);
+				XSSFCell cell1 = row.createCell(1);
+				cell.setCellValue(headers[r]);
+				cell1.setCellValue("nw");
+			}
+			FileOutputStream fos = new FileOutputStream(excelFileName);
+			wb.write(fos);
+			fos.flush();
+			fos.close();
+		} catch (IOException e){
+			e.printStackTrace();
+		}
 	}		
 }
 	
