@@ -37,16 +37,18 @@ public class ReplaceString {
 		}
 	
 	public void readTXT(String file) throws IOException {
-		FileReader fr = new FileReader("E:\\test\\data\\e.txt");
+		FileReader fr = new FileReader("E:\\test\\data\\01.txt");
 		BufferedReader br = new BufferedReader(fr);
 		String oldContent = "";
 		String line = br.readLine();
 		while(line != null) {
 			oldContent = oldContent + line;
 			line = br.readLine();
+			System.out.println("&&"+line);
+			System.out.println("%%"+oldContent);
 		}
 		System.out.println(">>"+oldContent);
-		String newContent = oldContent.replaceAll("5 7" , "new word");
+		String newContent = oldContent.replaceAll("\\$1_\\$", "newLine");
 		System.out.println("<<"+newContent);
 		FileWriter writer = new FileWriter("E:\\test\\data\\b.txt");
 		writer.write(newContent);
