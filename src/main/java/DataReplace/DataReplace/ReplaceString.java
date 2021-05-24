@@ -22,7 +22,7 @@ public class ReplaceString {
 	public void execute() throws Exception {
 		try {
 			String[] headers = readCSV("E:\\test\\newInput.csv");
-			this.readTXT("E:\\test\\data\\e.txt");
+			this.readTXT("E:\\test\\data\\e.txt", headers);
 			this.writeXLSX( "E:\\test\\out.xlsx" , headers);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -36,24 +36,33 @@ public class ReplaceString {
 		return allRows.get(0);
 		}
 	
-	public void readTXT(String file) throws IOException {
-		FileReader fr = new FileReader("E:\\test\\data\\01.txt");
-		BufferedReader br = new BufferedReader(fr);
-		String oldContent = "";
-		String line = br.readLine();
-		while(line != null) {
-			oldContent = oldContent + line;
-			line = br.readLine();
-			System.out.println("&&"+line);
-			System.out.println("%%"+oldContent);
+	public void readTXT(String file, String[] headers){
+		try {
+			FileReader fr = new FileReader("E:\\test\\data\\01.txt");
+			BufferedReader br = new BufferedReader(fr);
+			String oldContent = "";
+			String line = br.readLine();
+			while(line != null) {
+				oldContent = oldContent + line +System.lineSeparator();
+				line = br.readLine();
+			}
+//			for (int i = 1; i < headers.length; i++) {
+			int i = 1;
+				String s = Integer.toString(i);
+				String key = "\\$"+ s +"_\\$";
+				System.out.println("keyy     " +key);
+				String newContent = oldContent.replaceAll(key, headers[i]);
+				
+//			}
+			System.out.println(newContent);
+			File fi = new File("E:\\test\\data\\"+s+".txt");
+			FileWriter writer = new FileWriter(fi);
+			writer.write(newContent);
+			br.close();
+			writer.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		System.out.println(">>"+oldContent);
-		String newContent = oldContent.replaceAll("\\$1_\\$", "newLine");
-		System.out.println("<<"+newContent);
-		FileWriter writer = new FileWriter("E:\\test\\data\\b.txt");
-		writer.write(newContent);
-		br.close();
-		writer.close();
 	}
 	
 	public void writeXLSX(String file, String[] headers) {
@@ -61,14 +70,13 @@ public class ReplaceString {
 			String excelFileName = "E:\\test\\output.xlsx";
 			String sheetName = "Sheet1" ;
 			XSSFWorkbook wb = new XSSFWorkbook();
-			XSSFSheet sheet = wb.createSheet(sheetName);
-			for ( int r = 0; r < headers.length; r++) {
-				XSSFRow row = sheet.createRow(r);
-				XSSFCell cell = row.createCell(0);
-				XSSFCell cell1 = row.createCell(1);
-				cell.setCellValue(headers[r]);
-				cell1.setCellValue("nw");
+			XSSFSheet sheet = wb.createSheet(sheetName);		
+			XSSFRow row = sheet.createRow(0);
+				for ( int c = 0; c < headers.length; c++) {
+					XSSFCell cell = row.createCell(c);
+					cell.setCellValue(headers[c]);
 			}
+//				for ( int f = 0; )
 			FileOutputStream fos = new FileOutputStream(excelFileName);
 			wb.write(fos);
 			fos.flush();
