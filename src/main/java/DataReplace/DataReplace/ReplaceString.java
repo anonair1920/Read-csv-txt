@@ -7,10 +7,11 @@ import org.apache.poi.xssf.usermodel.*;
 
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvException;
+import com.opencsv.exceptions.CsvValidationException;
 
-public class ReplaceString {	
-	
-	public static void main(String[] args) throws IOException, CsvException {
+public class ReplaceString {
+
+	public static void main(String[] args) throws IOException {
 		try {
 			ReplaceString replaceString = new ReplaceString();
 			replaceString.execute();
@@ -18,44 +19,41 @@ public class ReplaceString {
 			e.printStackTrace();
 		}
 	}
-	
-	public void execute() throws Exception {
+
+	public void execute() {
 		try {
-			String[] headers = readCSV("E:\\test\\newInput.csv");
-			this.readTXT("E:\\test\\data\\e.txt", headers);
-			this.writeXLSX( "E:\\test\\out.xlsx" , headers);
+			String[] headers = readCSV("E:\\test\\input\\newInput.csv");
+			this.readTXT("E:\\test\\input\\e.txt", headers);
+			this.writeXLSX("E:\\test\\out.xlsx", headers);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public String[] readCSV(String file) throws IOException, CsvException {
-		CSVReader reader = new CSVReader( new FileReader(file));
+		CSVReader reader = new CSVReader(new FileReader(file));
 		List<String[]> allRows;
 		allRows = reader.readAll();
+		System.out.println(allRows.get(0));
 		return allRows.get(0);
-		}
-	
-	public void readTXT(String file, String[] headers){
+	}
+
+	public void readTXT(String file, String[] headers) {
 		try {
-			FileReader fr = new FileReader("E:\\test\\data\\01.txt");
+			FileReader fr = new FileReader("E:\\test\\input\\01.txt");
 			BufferedReader br = new BufferedReader(fr);
 			String oldContent = "";
 			String line = br.readLine();
-			while(line != null) {
-				oldContent = oldContent + line +System.lineSeparator();
+			while (line != null) {
+				oldContent = oldContent + line + System.lineSeparator();
 				line = br.readLine();
 			}
-//			for (int i = 1; i < headers.length; i++) {
 			int i = 1;
-				String s = Integer.toString(i);
-				String key = "\\$"+ s +"_\\$";
-				System.out.println("keyy     " +key);
-				String newContent = oldContent.replaceAll(key, headers[i]);
-				
-//			}
-			System.out.println(newContent);
-			File fi = new File("E:\\test\\data\\"+s+".txt");
+			String s = Integer.toString(i);
+			String key = "\\$" + s + "_\\$";
+			System.out.println("keyy     " + key);
+			String newContent = oldContent.replaceAll(key, headers[i]);
+			File fi = new File("E:\\test\\data\\" + s + ".txt");
 			FileWriter writer = new FileWriter(fi);
 			writer.write(newContent);
 			br.close();
@@ -64,27 +62,38 @@ public class ReplaceString {
 			e.printStackTrace();
 		}
 	}
-	
-	public void writeXLSX(String file, String[] headers) {
+
+	public void writeXLSX(String file, String[] headers) throws CsvValidationException {
 		try {
-			String excelFileName = "E:\\test\\output.xlsx";
-			String sheetName = "Sheet1" ;
+			int i = 1;
+			String fn = "E:\\test\\out\\" + i + ".xlsx";
+			CSVReader reader = new CSVReader(new FileReader("E:\\test\\input\\newInput.csv"));
+			String[] thisLine;
+			// String num = Integer.toString(i);
 			XSSFWorkbook wb = new XSSFWorkbook();
-			XSSFSheet sheet = wb.createSheet(sheetName);		
-			XSSFRow row = sheet.createRow(0);
-				for ( int c = 0; c < headers.length; c++) {
-					XSSFCell cell = row.createCell(c);
-					cell.setCellValue(headers[c]);
+			XSSFSheet sheet = wb.createSheet("Sheet1");
+			for (int r = 0; r < headers.length; r++) {
+				XSSFRow row = sheet.createRow(r);
+				XSSFCell cell = row.createCell(0);
+				cell.setCellValue(headers[r]);
 			}
-//				for ( int f = 0; )
-			FileOutputStream fos = new FileOutputStream(excelFileName);
-			wb.write(fos);
-			fos.flush();
-			fos.close();
-		} catch (IOException e){
+			while ((thisLine = reader.readNext()) != null) {
+				i++;
+				for (int r = 0; r < headers.length; r++) {
+					XSSFRow row = sheet.createRow(r);
+					XSSFCell cell0 = row.createCell(0);
+					XSSFCell cell1 = row.createCell(1);
+					cell0.setCellValue(headers[r]);
+					cell1.setCellValue(thisLine[r]);
+					System.out.println(">>>" + thisLine[r]);
+				}
+			}
+			FileOutputStream fos = new FileOutputStream(fn, true);
+				wb.write(fos);
+				fos.flush();
+				fos.close();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}		
+	}
 }
-	
-
