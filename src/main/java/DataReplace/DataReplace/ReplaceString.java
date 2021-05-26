@@ -66,32 +66,26 @@ public class ReplaceString {
 	public void writeXLSX(String file, String[] headers) throws CsvValidationException {
 		try {
 			int i = 1;
-			String fn = "E:\\test\\out\\" + i + ".xlsx";
 			CSVReader reader = new CSVReader(new FileReader("E:\\test\\input\\newInput.csv"));
 			String[] thisLine;
-			// String num = Integer.toString(i);
-			XSSFWorkbook wb = new XSSFWorkbook();
-			XSSFSheet sheet = wb.createSheet("Sheet1");
-			for (int r = 0; r < headers.length; r++) {
-				XSSFRow row = sheet.createRow(r);
-				XSSFCell cell = row.createCell(0);
-				cell.setCellValue(headers[r]);
-			}
+			reader.readNext();
 			while ((thisLine = reader.readNext()) != null) {
-				i++;
+				XSSFWorkbook wb = new XSSFWorkbook();
+				XSSFSheet sheet = wb.createSheet("Sheet1");
 				for (int r = 0; r < headers.length; r++) {
 					XSSFRow row = sheet.createRow(r);
 					XSSFCell cell0 = row.createCell(0);
 					XSSFCell cell1 = row.createCell(1);
 					cell0.setCellValue(headers[r]);
 					cell1.setCellValue(thisLine[r]);
-					System.out.println(">>>" + thisLine[r]);
 				}
-			}
-			FileOutputStream fos = new FileOutputStream(fn, true);
+				String fn = "E:\\test\\out\\" + i + ".xlsx";
+				FileOutputStream fos = new FileOutputStream(fn, false);
 				wb.write(fos);
 				fos.flush();
-				fos.close();
+				// fos.close();
+				i++;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
