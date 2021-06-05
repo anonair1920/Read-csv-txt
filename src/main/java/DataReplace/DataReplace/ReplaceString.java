@@ -83,7 +83,7 @@ public class ReplaceString {
 				FileOutputStream fos = new FileOutputStream(fn, false);
 				wb.write(fos);
 				fos.flush();
-				// fos.close();
+				wb.close();
 				i++;
 			}
 		} catch (IOException e) {
